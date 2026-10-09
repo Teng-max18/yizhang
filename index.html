@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f5f0">
+  <meta name="description" content="服饰进销存、采购来源、销售利润与库存统计。数据只保存在你的设备上。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="衣账">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+  <title>衣账 · 服饰利润管家</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">衣</div>
+        <div><div class="brand-name">衣账 <span class="brand-en">WARDROBE LEDGER</span></div><div class="brand-subtitle">你的私人服饰生意账本</div></div>
+      </div>
+      <button id="settingsButton" class="icon-btn" type="button" aria-label="备份与设置" title="备份与设置">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.4a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8Z"/><path d="M19.4 15.3c.1-.5.2-1.1.2-1.7s-.1-1.2-.2-1.7l1.6-1.3-1.8-3.1-2 .7c-.9-.7-1.9-1.3-3-1.6L13.8 2h-3.6l-.4 2.6c-1.1.3-2.1.9-3 1.6l-2-.7L3 8.6l1.6 1.3c-.1.5-.2 1.1-.2 1.7s.1 1.2.2 1.7L3 14.6l1.8 3.1 2-.7c.9.7 1.9 1.3 3 1.6l.4 2.4h3.6l.4-2.4c1.1-.3 2.1-.9 3-1.6l2 .7 1.8-3.1-1.6-1.3Z"/></svg>
+      </button>
+    </header>
+
+    <main id="content" class="content" aria-live="polite"></main>
+
+    <nav class="tab-bar" aria-label="主导航">
+      <button class="tab active" data-tab="home" type="button"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3V10Z"/><path d="M9 20v-7h6v7"/></svg></span><span>概览</span></button>
+      <button class="tab" data-tab="products" type="button"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 7 9-4 9 4v11l-9 4-9-4V7Z"/><path d="m3 7 9 4 9-4M12 11v11"/></svg></span><span>商品</span></button>
+      <button class="tab" data-tab="sales" type="button"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg></span><span>销售</span></button>
+      <button class="tab" data-tab="stats" type="button"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-9M22 20V7M2 20h22"/></svg></span><span>统计</span></button>
+    </nav>
+  </div>
+
+  <dialog id="productDialog" class="sheet">
+    <form id="productForm" class="sheet-panel">
+      <div class="sheet-head"><div><div class="eyebrow">PRODUCT DETAILS</div><h2 id="productDialogTitle">新增商品</h2></div><button type="button" class="close-btn" data-close="productDialog" aria-label="关闭">×</button></div>
+      <div class="sheet-body">
+        <label class="photo-input" for="productImage"><span id="imagePreview" class="photo-preview">＋<small>添加商品照片</small></span><span class="photo-help">点击上传 · 可选</span></label>
+        <input id="productImage" type="file" accept="image/*" class="sr-only">
+        <div class="form-grid">
+          <label>品牌 <span class="required">*</span><input name="brand" required maxlength="80" placeholder="例如 Nike" autocomplete="off"></label>
+          <label>货号 <span class="required">*</span><input name="sku" required maxlength="90" placeholder="例如 FD1234-001" autocomplete="off"></label>
+          <label class="full">商品名称<input name="name" maxlength="120" placeholder="例如 连帽卫衣"></label>
+          <label>分类<input name="category" list="categoryOptions" maxlength="60" placeholder="例如 外套"></label>
+          <label>尺码<input name="size" maxlength="40" placeholder="例如 M"></label>
+          <label>颜色<input name="color" maxlength="60" placeholder="例如 黑色"></label>
+          <label>采购日期 <span class="required">*</span><input name="purchaseDate" type="date" required></label>
+          <label class="full">商品来源 <span class="required">*</span><input name="source" required maxlength="120" placeholder="例如 得物、淘宝、实体店、代购"></label>
+          <label class="full">供应商 / 店铺（可选）<input name="supplier" maxlength="120" placeholder="例如 XX服饰店"></label>
+          <label>采购件数 <span class="required">*</span><input name="quantity" required type="number" min="1" max="999999" step="1" inputmode="numeric" placeholder="0"></label>
+          <label>单件成本（元） <span class="required">*</span><input name="cost" required type="number" min="0" max="99999999" step="0.01" inputmode="decimal" placeholder="0.00"></label>
+          <label class="full">参考售价（元）<input name="price" type="number" min="0" max="99999999" step="0.01" inputmode="decimal" placeholder="0.00"></label>
+        </div>
+        <datalist id="categoryOptions"><option value="T恤"><option value="卫衣"><option value="外套"><option value="裤子"><option value="裙装"><option value="鞋履"><option value="包袋"><option value="配饰"></datalist>
+        <p id="productFormNote" class="muted small"></p>
+      </div>
+      <div class="sheet-footer"><button type="button" class="secondary-btn" data-close="productDialog">取消</button><button type="submit" class="primary-btn" id="productSaveButton">保存商品</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="saleDialog" class="sheet">
+    <form id="saleForm" class="sheet-panel">
+      <div class="sheet-head"><div><div class="eyebrow">RECORD A SALE</div><h2>记录售出</h2></div><button type="button" class="close-btn" data-close="saleDialog" aria-label="关闭">×</button></div>
+      <div class="sheet-body">
+        <div class="form-grid">
+          <label class="full">选择商品 <span class="required">*</span><select name="productId" id="saleProduct" required></select></label>
+          <div class="form-info full" id="saleStockHint">选择有库存的商品</div>
+          <label>卖出件数 <span class="required">*</span><input type="number" name="quantity" required min="1" step="1" inputmode="numeric" value="1"></label>
+          <label>单件成交价（元） <span class="required">*</span><input type="number" name="price" required min="0" max="99999999" step="0.01" inputmode="decimal" placeholder="0.00"></label>
+          <label class="full">销售日期 <span class="required">*</span><input type="date" name="saleDate" required></label>
+        </div>
+        <div class="sale-estimate"><div><span>预计销售额</span><strong id="estimateRevenue">¥0.00</strong></div><div><span>预计毛利润</span><strong id="estimateProfit">¥0.00</strong></div></div>
+        <p class="muted small">毛利润 = 实际销售额 − 对应商品采购成本；暂未扣除运费、手续费等额外支出。</p>
+      </div>
+      <div class="sheet-footer"><button type="button" class="secondary-btn" data-close="saleDialog">取消</button><button type="submit" id="saleSaveButton" class="primary-btn">确认售出</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog" class="sheet">
+    <div class="sheet-panel">
+      <div class="sheet-head"><div><div class="eyebrow">DATA & PRIVACY</div><h2>数据备份</h2></div><button type="button" class="close-btn" data-close="settingsDialog" aria-label="关闭">×</button></div>
+      <div class="sheet-body settings-body">
+        <div class="privacy-box"><strong>🔒 数据只存储在这部手机</strong><p>无需账号、无需云同步。清除 Safari 网站数据、删除应用数据或换手机可能导致记录丢失，请定期备份。</p></div>
+        <h3>完整备份（推荐）</h3>
+        <p class="muted">导出 JSON 包含商品、销售记录及商品图片，可以恢复至另一部设备。</p>
+        <button id="exportBackup" class="wide-btn" type="button">导出完整备份 .json</button>
+        <button id="importBackup" class="wide-btn outline" type="button">从备份恢复 .json</button>
+        <input id="importFile" class="sr-only" type="file" accept=".json,application/json">
+        <hr>
+        <h3>Excel 可打开的表格</h3>
+        <p class="muted">分别导出商品和销售 CSV，适合查账；CSV 不包含图片，不能用于完整恢复。</p>
+        <button id="exportProductsCsv" class="wide-btn outline" type="button">导出商品列表 .csv</button>
+        <button id="exportSalesCsv" class="wide-btn outline" type="button">导出销售记录 .csv</button>
+        <div class="muted small tip">提示：首次访问需要网络，之后可离线打开；在 iPhone Safari 中点击“分享 → 添加到主屏幕”。</div>
+      </div>
+    </div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
